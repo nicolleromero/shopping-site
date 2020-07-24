@@ -12,6 +12,10 @@
         </tr>
     </thead>
     <tbody>
+        {% if cart == {} %}
+        <p>Your cart is currently empty.</p>
+
+        {% else %}
         {% for item in cart %}
         <tr>
             <td>{{ melon_types[item].common_name }}</td>
@@ -20,6 +24,7 @@
             <td>{{ (melon_types[item].price * cart[item]) | currencyFormat }}</td>
         </tr>
         {% endfor %}
+        {% endif %}
     </tbody>
 </table>
 

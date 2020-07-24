@@ -41,3 +41,10 @@ div.melon-summary .price {
   margin: 5em auto 0 auto;  /* TRBL */
 }
 
+h2 {
+    font-family: sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    }

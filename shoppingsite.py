@@ -10,6 +10,7 @@ from flask import Flask, render_template, redirect, flash, request, session
 import jinja2
 
 import melons
+import customers
 
 app = Flask(__name__)
 
@@ -62,8 +63,8 @@ def show_melon(melon_id):
 def show_shopping_cart():
     """Display content of shopping cart."""
 
-    cart = session['cart']
-    total = session['total']
+    cart = session.get('cart', {})
+    total = session.get('total', 0)
 
     # TODO: Display the contents of the shopping cart.
 
@@ -109,12 +110,11 @@ def add_to_cart(melon_id):
 
     total = 0
     for item in cart:
-        print(item, cart[item], melons.melon_types[item].price)
         total += (melons.melon_types[item].price * cart[item])
-    print("after", total)
-    session['total'] = total
 
-    # TODO: Finish shopping cart functionality
+    melon_name = melons.melon_types[item].common_name
+    flash(f"You've successfully added one {melon_name} to your cart.")
+    session['total'] = total
 
     # The logic here should be something like:
     #
@@ -132,7 +132,12 @@ def add_to_cart(melon_id):
 def show_login():
     """Show login form."""
 
-    return render_template("login.html")
+    email = request.args.get("email")
+    password = request.args.get("password")
+
+    return render_template("login.html",
+                           email=email,
+                           password=password)
 
 
 @app.template_filter()
@@ -148,8 +153,40 @@ def process_login():
     Find the user's login credentials located in the 'request.form'
     dictionary, look up the user, and store them in the session.
     """
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-    # TODO: Need to implement this!
+    customers_list = customers.read_customers_from_file("customers.txt")
+
+    if email in customers_list.keys():
+        customer = customers.get_by_email(email)
+
+        if customer.password == password:
+            flash("Login successful!")
+            session['logged_in_customer_email'] = email
+            session.get('logged_in_customer_email')
+            return redirect("/melons")
+
+        else:
+            flash("The password you entered is incorrect.")
+            return redirect("/login",
+                            logged_in_customer_email=logged_in_customer_email)
+    else:
+        flash("The email you entered does not match our records.")
+        return redirect("/login",
+                        logged_in_customer_email=logged_in_customer_email)
+
+    # error = None
+
+    # if request.method == 'POST':
+    #     if valid_login(request.form['email'],
+    #                    request.form['password']):
+    #         return log_the_user_in(request.form['email'])
+    #     else:
+    #         error = 'Invalid email/password'
+    # # the code below is executed if the request method
+    # # was GET or the credentials were invalid
+    # return render_template('login.html', error=error)
 
     # The logic here should be something like:
     #
@@ -163,7 +200,17 @@ def process_login():
     # - if they don't, flash a failure message and redirect back to "/login"
     # - do the same if a Customer with that email doesn't exist
 
-    return "Oops! This needs to be implemented"
+
+@app.route("/logout")
+def process_logout():
+    """Log user into site.
+
+    Delete the user's login credentials from the session.
+    """
+    del session['logged_in_customer_email']
+
+    flash("You are now logged out.")
+    return redirect("/melons")
 
 
 @app.route("/checkout")
