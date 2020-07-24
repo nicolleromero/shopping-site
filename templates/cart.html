@@ -24,10 +24,11 @@
 </table>
 
 <h3>Total:
+    {{ total | currencyFormat }}
+</h3><br>
+<div>
+    <a href="/checkout" class="btn btn-lg btn-primary">Check Out</a>
 
-    <!-- Sum all using format of last td -->
-    $27.00</h3>
-
-<a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
-
+    <a href="/melons" class="btn btn-lg btn-success">Continue Shopping</a>
+</div>
 {% endblock %}

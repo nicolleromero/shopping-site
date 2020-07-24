@@ -54,7 +54,6 @@ def show_melon(melon_id):
 
     melon = melons.get_by_id(melon_id)
 
-    print(melon)
     return render_template("melon_details.html",
                            display_melon=melon)
 
@@ -63,13 +62,8 @@ def show_melon(melon_id):
 def show_shopping_cart():
     """Display content of shopping cart."""
 
-    melon_list = melons.get_all()
     cart = session['cart']
-
-    # total_cost = 0
-    # total_cost += melon.price * cart_dict[melon_id]
-
-    # add_to_cart(melon)
+    total = session['total']
 
     # TODO: Display the contents of the shopping cart.
 
@@ -91,7 +85,8 @@ def show_shopping_cart():
 
     return render_template("cart.html",
                            cart=cart,
-                           melon_types=melons.melon_types)
+                           melon_types=melons.melon_types,
+                           total=total)
 
 
 @app.route("/add_to_cart/<melon_id>")
@@ -111,6 +106,13 @@ def add_to_cart(melon_id):
     cart = session.get('cart', {})
     cart[melon_id] = cart.get(melon_id, 0) + 1
     session['cart'] = cart
+
+    total = 0
+    for item in cart:
+        print(item, cart[item], melons.melon_types[item].price)
+        total += (melons.melon_types[item].price * cart[item])
+    print("after", total)
+    session['total'] = total
 
     # TODO: Finish shopping cart functionality
 
