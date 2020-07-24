@@ -55,12 +55,12 @@ def read_melon_types_from_file(filepath):
              img_url,
              color,
              seedless) = line.strip().split("|")
-    
+
             price = float(price)
-    
+
             # For seedless, we want to turn "1" => True, otherwise False
             seedless = (seedless == "1")
-    
+
             melon_types[melon_id] = Melon(melon_id,
                                           melon_type,
                                           common_name,
